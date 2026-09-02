@@ -1,0 +1,9 @@
+[submodule "infrastructure/terraform-vm-templates"]
+	path = infrastructure/terraform-vm-templates
+	url = https://github.com/etherian3/terraform-vm-templates.git
+[submodule "infrastructure/homelab-ansible"]
+	path = infrastructure/homelab-ansible
+	url = https://github.com/etherian3/homelab-ansible.git
+[submodule "applications/homelab-app"]
+	path = applications/homelab-app
+	url = https://github.com/etherian3/homelab-app.git
