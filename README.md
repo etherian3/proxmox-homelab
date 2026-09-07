@@ -1,182 +1,172 @@
-# Proxmox Homelab
+# Proxmox Homelab Infrastructure Platform
 
-A production-style homelab built to demonstrate practical **DevOps, Infrastructure, Linux Administration, Networking, Containerization, Monitoring, CI/CD, Backup, and Disaster Recovery** skills.
+A production-style homelab infrastructure project built to demonstrate practical **Infrastructure, DevOps, SysAdmin, Automation, Monitoring, Security, Backup, and CI/CD** skills.
 
-The environment is built on Proxmox and managed using Infrastructure as Code and configuration automation.
+The platform runs on a self-hosted Proxmox environment and uses Infrastructure as Code, Configuration Management, containerized services, monitoring, automated backups, and GitHub Actions-based CI/CD.
+
+---
+
+## Project Overview
+
+This project was built as a practical infrastructure platform rather than a collection of isolated technologies.
+
+The goal is to demonstrate how infrastructure and applications can be:
+
+- provisioned automatically
+- configured consistently
+- deployed reproducibly
+- monitored
+- secured
+- backed up
+- restored
+- and recovered from deployment failures
+
+The environment consists of a Proxmox host running dedicated virtual machines for management and application workloads.
 
 ---
 
 ## Architecture
 
 ```text
-                              GitHub
-                                │
-                                │ git push
-                                ▼
-                       ┌──────────────────┐
-                       │ GitHub Actions   │
-                       │                  │
-                       │ Test             │
-                       │ Docker Build     │
-                       │ Push to GHCR     │
-                       └────────┬─────────┘
-                                │
-                                ▼
-                    Self-hosted Runner
-                    management-01
+                         GitHub
+                           │
+                           │ Push
+                           ▼
+                  GitHub Actions
+                           │
+                    ┌──────┴──────┐
+                    │             │
+                   Test          Build
+                    │             │
+                    │        Docker Image
+                    │             │
+                    │             ▼
+                    │            GHCR
+                    │             │
+                    └──────┬──────┘
+                           │
+                           │ Deploy
+                           ▼
+                 Self-hosted Runner
+                 management-01
                     192.168.1.110
-                                │
-                                │ SSH
-                                ▼
-                    ┌─────────────────────┐
-                    │ application-01      │
-                    │ 192.168.1.111       │
-                    │                     │
-                    │ ┌─────────────────┐ │
-                    │ │ Traefik         │ │
-                    │ └────────┬────────┘ │
-                    │          │          │
-                    │ ┌────────▼────────┐ │
-                    │ │ homelab-app     │ │
-                    │ │ Docker          │ │
-                    │ └────────┬────────┘ │
-                    │          │          │
-                    │ ┌────────▼────────┐ │
-                    │ │ PostgreSQL 16   │ │
-                    │ └─────────────────┘ │
-                    │                     │
-                    │ Prometheus          │
-                    │ Grafana             │
-                    │ Node Exporter       │
-                    └─────────────────────┘
-                                │
-                                ▼
-                         Telegram Alerts
+                           │
+                           │ SSH
+                           ▼
+                application-01
+                192.168.1.111
+                           │
+             ┌─────────────┼─────────────┐
+             │             │             │
+          Traefik      homelab-app   PostgreSQL
+             │             │
+             │             │
+             ▼             │
+        app.homelab       │
+                           │
+                           ▼
+                    Prometheus
+                           │
+                           ▼
+                        Grafana
+                           │
+                           ▼
+                       Telegram
 ```
 
----
-
-## Goals
-
-This project is designed to demonstrate how a small production-like infrastructure can be designed, automated, monitored, deployed, and recovered.
-
-The focus is not simply on installing technologies, but on implementing operational workflows around them.
-
-### Key engineering goals
-
-- Infrastructure as Code
-- Automated server configuration
-- Containerized applications
-- Reverse proxy and service networking
-- Observability and alerting
-- Automated CI/CD
-- Immutable container deployments
-- Deployment health verification
-- Application rollback
-- Database backup and restore testing
-- Disaster recovery planning
-- Reproducible infrastructure
-
----
-
-## Technology Stack
-
-| Area | Technology |
-|---|---|
-| Hypervisor | Proxmox VE |
-| Operating System | Ubuntu |
-| Infrastructure as Code | Terraform |
-| Configuration Management | Ansible |
-| Container Runtime | Docker |
-| Orchestration | Docker Compose |
-| Reverse Proxy | Traefik |
-| Application | Python / FastAPI |
-| Database | PostgreSQL 16 |
-| Metrics | Prometheus |
-| Visualization | Grafana |
-| Host Metrics | Node Exporter |
-| CI/CD | GitHub Actions |
-| Container Registry | GitHub Container Registry |
-| Automation Runner | GitHub Actions Self-hosted Runner |
-| Notifications | Telegram |
-| Version Control | Git / GitHub |
-
----
-
-# Infrastructure
-
-## Proxmox
-
-The homelab runs on a Proxmox VE host.
-
-Virtual machines are provisioned as infrastructure rather than manually configured machines.
-
-Current virtual machines:
-
-| VM | IP | Role |
-|---|---|---|
-| management-01 | 192.168.1.110 | Ansible control node / CI runner |
-| application-01 | 192.168.1.111 | Application / database / monitoring |
-
-See:
-
-- [`docs/infrastructure/proxmox.md`](docs/infrastructure/proxmox.md)
-- [`docs/infrastructure/network.md`](docs/infrastructure/network.md)
-- [`docs/infrastructure/vm-inventory.md`](docs/infrastructure/vm-inventory.md)
-
----
-
-# Infrastructure as Code
-
-## Terraform
-
-Terraform is used to provision the homelab virtual machines.
-
-The goal is to make VM provisioning reproducible instead of relying on manual creation through the Proxmox GUI.
+Infrastructure provisioning and configuration:
 
 ```text
 Terraform
-   │
-   ▼
+    │
+    ▼
 Proxmox
-   │
-   ├── management-01
-   └── application-01
+    │
+    ▼
+Ubuntu VMs
+    │
+    ▼
+Ansible
+    │
+    ├── Common configuration
+    ├── Docker
+    ├── Application
+    ├── Monitoring
+    ├── Security
+    └── Maintenance
 ```
 
-Documentation:
+---
 
-[`docs/automation/terraform.md`](docs/automation/terraform.md)
+## Infrastructure
+
+### Proxmox
+
+The virtualization layer is provided by Proxmox VE.
+
+Current virtual machines:
+
+| VM | IP Address | Role |
+|---|---|---|
+| management-01 | 192.168.1.110 | Ansible + GitHub Actions self-hosted runner |
+| application-01 | 192.168.1.111 | Application platform |
+
+The infrastructure is designed so that management and application workloads are separated.
 
 ---
 
-# Configuration Management
+## Infrastructure as Code
 
-## Ansible
+### Terraform
 
-Ansible configures the operating systems and services after the VMs are provisioned.
+Terraform is used to provision the virtual machines on Proxmox.
 
-The Ansible control node runs on `management-01`.
+The Terraform configuration manages:
 
-The automation repository contains:
+- VM creation
+- CPU allocation
+- memory allocation
+- disk configuration
+- network configuration
+- VM metadata
 
-- inventory
-- SSH configuration
+This makes the VM infrastructure reproducible instead of relying entirely on manual Proxmox configuration.
+
+---
+
+## Configuration Management
+
+### Ansible
+
+Ansible is used to configure the operating systems and application platform.
+
+Roles include:
+
+- `common`
+- `docker`
+- `application`
+- `monitoring`
+- `security`
+- `maintenance`
+
+The configuration includes:
+
+- package installation
 - Docker installation
-- application configuration
-- monitoring configuration
-- database configuration
-- Traefik configuration
+- application deployment configuration
+- monitoring stack
+- UFW firewall
+- SSH hardening
+- automatic security updates
+- maintenance configuration
 
-Documentation:
-
-[`docs/automation/ansible.md`](docs/automation/ansible.md)
+Sensitive configuration is protected using **Ansible Vault**.
 
 ---
 
-# Application Platform
+## Application Platform
 
-The application runs using Docker Compose.
+The application platform runs on `application-01`.
 
 ```text
 Traefik
@@ -188,68 +178,168 @@ homelab-app
 PostgreSQL
 ```
 
-The application is exposed through:
+### Application
+
+The application is containerized using Docker.
+
+The application image is published to GitHub Container Registry:
 
 ```text
-app.homelab
+ghcr.io/etherian3/homelab-app
 ```
 
-Traefik handles HTTP routing while Docker networks isolate application and proxy traffic.
+Production deployments use immutable Git SHA tags.
 
-Documentation:
+Example:
 
-- [`docs/services/application.md`](docs/services/application.md)
-- [`docs/services/reverse-proxy.md`](docs/services/reverse-proxy.md)
-- [`docs/services/database.md`](docs/services/database.md)
+```text
+ghcr.io/etherian3/homelab-app:sha-2d6ce1f
+```
+
+This provides traceability between a running production container and its source code commit.
+
+### PostgreSQL
+
+PostgreSQL provides persistent application storage.
+
+Database data is stored using a Docker named volume.
 
 ---
 
-# Observability
+## Reverse Proxy
 
-The infrastructure includes a monitoring stack consisting of:
+Traefik provides the HTTP entrypoint for the application.
 
 ```text
-Node Exporter
-      │
-      ▼
- Prometheus
-      │
-      ▼
-  Grafana
+Client
+  │
+  │ HTTP
+  ▼
+Traefik :80
+  │
+  │ Host: app.homelab
+  ▼
+homelab-app :8000
 ```
 
-Metrics include:
+The application port is not directly published to the LAN.
+
+Only the reverse proxy exposes the application externally.
+
+---
+
+## Monitoring
+
+The infrastructure uses:
+
+- Prometheus
+- Node Exporter
+- Grafana
+- Telegram notifications
+
+Monitoring covers:
 
 - CPU utilization
-- Memory utilization
-- Disk utilization
-- Network traffic
-- Host availability
-- Application infrastructure health
+- memory utilization
+- disk usage
+- network activity
+- host availability
+- application infrastructure health
 
-Grafana dashboards are used for visualization.
+A CPU alert was intentionally triggered using `stress-ng` and successfully delivered a Telegram notification.
 
-Prometheus alerting is configured for high CPU utilization, with Telegram notifications.
+The alert was subsequently resolved after the load stopped.
 
-Documentation:
+---
 
-- [`docs/services/monitoring.md`](docs/services/monitoring.md)
-- [`docs/operations/alerting.md`](docs/operations/alerting.md)
+## Security
+
+The application VM uses UFW with a default-deny inbound policy.
+
+Allowed services include:
+
+```text
+22/tcp     SSH
+80/tcp     Traefik
+3000/tcp   Grafana
+```
+
+SSH hardening includes:
+
+```text
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PubkeyAuthentication yes
+```
+
+The application container itself does not expose port `8000` directly to the LAN.
+
+Secrets such as database credentials are stored outside Git.
+
+---
+
+## Backup & Restore
+
+PostgreSQL backups are performed using `pg_dump`.
+
+The backup process:
+
+1. Creates a PostgreSQL dump
+2. Compresses the dump
+3. Verifies the archive
+4. Copies the backup to `management-01`
+5. Verifies the remote archive
+6. Applies retention policies
+
+Automated backups are scheduled using a systemd timer.
+
+A real PostgreSQL restore test was also performed using a temporary PostgreSQL environment to verify that the backup could actually be restored.
+
+The project documents the recovery process and its current limitations.
+
+---
+
+## Disaster Recovery
+
+The current environment is intentionally documented as a single-host homelab architecture.
+
+There is currently:
+
+- one Proxmox host
+- one application VM
+- no HA cluster
+- no automatic VM failover
+
+Terraform and Ansible provide infrastructure recovery capability, while PostgreSQL backups provide application data recovery.
+
+The project documents:
+
+- recovery scenarios
+- backup strategy
+- restore procedures
+- RPO/RTO concepts
+- current limitations
+- future improvements
+
+The objective is to distinguish between **implemented recovery capabilities** and future plans rather than claiming HA that does not exist.
 
 ---
 
 # CI/CD
 
-The application uses GitHub Actions for automated deployment.
+The application uses GitHub Actions for automated CI/CD.
+
+Pipeline:
 
 ```text
-Git push
+Git Push
    │
    ▼
 Test
    │
    ▼
-Docker Build
+Build Docker Image
    │
    ▼
 Push to GHCR
@@ -258,149 +348,108 @@ Push to GHCR
 Self-hosted Runner
    │
    ▼
-application-01
+Deploy immutable SHA
    │
    ▼
 Health Check
+   │
+   ├── Success ───────────────► Production
+   │
+   └── Failure
+          │
+          ▼
+   Automatic Rollback
+          │
+          ▼
+   Previous SHA
+          │
+          ▼
+      Health Check
+          │
+          ▼
+      Production
 ```
 
-The production deployment uses immutable Docker image tags based on Git commit SHA.
+## Self-hosted Runner
 
-Example:
+The application VM is located on a private LAN.
+
+GitHub-hosted runners cannot directly access the private application VM.
+
+Therefore a GitHub Actions self-hosted runner is installed on:
 
 ```text
-ghcr.io/etherian3/homelab-app:sha-fe60eb3
+management-01
+192.168.1.110
 ```
 
-This makes it possible to identify exactly which source revision is running in production.
+The runner connects to `application-01` through SSH.
 
 ---
 
 ## Immutable Deployments
 
-Instead of deploying only:
+Production does not rely solely on the `latest` tag.
+
+Instead, deployments use Git commit SHA tags:
 
 ```text
-latest
+sha-xxxxxxxx
 ```
 
-the deployment system uses:
-
-```text
-sha-<commit>
-```
-
-Example:
-
-```text
-sha-fe60eb3
-```
-
-This provides:
-
-- deployment traceability
-- reproducibility
-- safer releases
-- easier rollback
-- no dependency on a mutable production tag
+This allows a specific application version to be identified and redeployed.
 
 ---
 
-## Health Verification
+## Automatic Rollback
 
-Deployments are not considered successful merely because the Docker container starts.
+Before deployment, the currently running production image is captured.
 
-The deployment script waits for the application Docker health check:
+If the new deployment fails or the health check fails, the pipeline automatically deploys the previous production image.
 
-```text
-healthy
-```
-
-Only after the health check succeeds is the deployment considered successful.
+The rollback does not rebuild the previous application version.
 
 ---
 
-## Rollback
+## Rollback Test
 
-Previous immutable images can be deployed without rebuilding.
-
-Example:
-
-```bash
-./scripts/rollback.sh sha-92e9e15
-```
-
-A real rollback test has been performed successfully.
-
-The application was rolled back from:
+Automatic rollback was tested intentionally using an invalid image tag:
 
 ```text
-sha-fe60eb3
+sha-deadbee
 ```
 
-to:
+The deployment failed while attempting to pull the non-existent image.
+
+The pipeline then automatically restored the previous production image.
+
+Production was subsequently verified:
 
 ```text
-sha-92e9e15
+Application container: healthy
+Application status: running
 ```
 
-and returned to a healthy state.
+The application endpoint returned:
 
-The application was subsequently restored to:
-
-```text
-sha-fe60eb3
+```json
+{
+  "application": "homelab-app",
+  "status": "running"
+}
 ```
 
-Documentation:
-
-[`ci-cd/README.md`](ci-cd/README.md)
+This demonstrates an actual tested failure-recovery workflow rather than only a documented rollback mechanism.
 
 ---
 
-# Backup & Restore
-
-PostgreSQL backups are performed using `pg_dump`.
-
-A real restore test has been performed against a temporary PostgreSQL instance.
-
-The restore successfully recovered test data and verified the restored records.
-
-The project treats backup verification as an operational requirement rather than assuming that a successful backup command automatically means recoverability.
-
-Documentation:
-
-[`docs/operations/backup-restore.md`](docs/operations/backup-restore.md)
-
----
-
-# Disaster Recovery
-
-The project documents recovery procedures and current infrastructure limitations.
-
-Current architecture intentionally uses a single Proxmox host and a single application VM, so it does not provide high availability.
-
-Recovery planning covers:
-
-- infrastructure recreation
-- VM provisioning
-- configuration management
-- database restoration
-- application deployment
-- recovery objectives
-- current limitations
-- future improvements
-
-Documentation:
-
-[`docs/operations/disaster-recovery.md`](docs/operations/disaster-recovery.md)
-
----
-
-# Project Structure
+## Repository Structure
 
 ```text
 proxmox-homelab/
+│
+├── README.md
+├── CHANGELOG.md
 │
 ├── docs/
 │   ├── architecture/
@@ -417,155 +466,111 @@ proxmox-homelab/
 │   └── homelab-app/
 │
 ├── monitoring/
-│
-├── ci-cd/
 │   └── README.md
 │
-├── README.md
-└── CHANGELOG.md
+└── ci-cd/
+    └── README.md
 ```
 
 ---
 
-# Engineering Practices Demonstrated
+## Technology Stack
+
+| Area | Technology |
+|---|---|
+| Virtualization | Proxmox VE |
+| Infrastructure as Code | Terraform |
+| Configuration Management | Ansible |
+| OS | Ubuntu |
+| Container Runtime | Docker |
+| Container Orchestration | Docker Compose |
+| Reverse Proxy | Traefik |
+| Application | FastAPI / Uvicorn |
+| Database | PostgreSQL |
+| Container Registry | GitHub Container Registry |
+| CI/CD | GitHub Actions |
+| Monitoring | Prometheus |
+| Metrics | Node Exporter |
+| Visualization | Grafana |
+| Alerting | Telegram |
+| Firewall | UFW |
+| Secrets | Ansible Vault |
+| Backup | PostgreSQL pg_dump |
+| Scheduling | systemd timer |
+
+---
+
+## What This Project Demonstrates
 
 This project demonstrates practical experience with:
 
-### Infrastructure
-
+- Linux system administration
 - Proxmox virtualization
-- Linux server administration
-- VM networking
 - Infrastructure as Code
-- Terraform
-
-### Automation
-
-- Ansible
-- SSH automation
-- Idempotent configuration
-- Secrets management with Ansible Vault
-
-### Containers
-
+- Configuration management
 - Docker
-- Docker Compose
-- Container networking
-- Persistent volumes
-- Health checks
-- GHCR
-
-### Networking
-
-- Private LAN networking
-- Reverse proxy
-- HTTP routing
-- Docker networks
-- Service isolation
-
-### Observability
-
-- Prometheus
-- Grafana
-- Node Exporter
-- Alerting
-- Telegram notifications
-
-### CI/CD
-
+- reverse proxy configuration
+- PostgreSQL administration
+- monitoring and alerting
+- firewall configuration
+- SSH hardening
+- secrets management
+- backup and restore
+- disaster recovery planning
+- Git
 - GitHub Actions
-- Self-hosted runners
-- Automated testing
-- Docker image builds
-- Container registry publishing
-- Immutable deployments
-- Deployment verification
-- Rollback
+- container registries
+- immutable deployments
+- deployment health checks
+- automatic rollback
+- failure testing
 
-### Operations
-
-- PostgreSQL backup
-- Restore testing
-- Disaster recovery planning
-- Recovery procedures
-- Operational documentation
+The emphasis is on **implemented and tested infrastructure**, rather than simply listing technologies as skills.
 
 ---
 
-# Lessons Learned
+## Future Improvements
 
-The project intentionally documents problems encountered during implementation rather than presenting only the final state.
+Potential future improvements include:
 
-Examples include:
-
-- GitHub-hosted runners cannot directly access private homelab IP addresses.
-- A self-hosted runner is useful when deployment targets exist inside a private network.
-- `latest` is convenient but less suitable for traceable production deployments.
-- Immutable image tags make rollback significantly simpler.
-- Container startup does not necessarily mean an application is healthy.
-- Backups should be tested through an actual restore.
-- Disaster recovery planning must reflect the real infrastructure rather than an idealized architecture.
-
----
-
-# Future Improvements
-
-Planned improvements include:
-
-- Automated PostgreSQL backup scheduling
-- Remote backup storage
-- Proxmox VM backup automation
-- Staging environment
-- Automated database migrations
-- Automatic rollback on failed deployment
-- Deployment history
-- CI/CD concurrency controls
-- Manual deployment workflow
-- GitHub environment protection
-- Additional infrastructure monitoring
-- Higher availability architecture
+- internal DNS instead of `/etc/hosts`
+- HTTPS with automated certificate management
+- centralized logging
+- additional application health checks
+- automated infrastructure backup
+- Proxmox VM backup
+- more granular monitoring alerts
+- infrastructure recovery automation
+- staging environment
+- pull-request based deployment promotion
 
 ---
 
-# Documentation
+## Documentation
 
-Detailed documentation:
+Detailed documentation is available under [`docs/`](docs/).
 
-- [Architecture](docs/architecture/architecture.md)
-- [Proxmox](docs/infrastructure/proxmox.md)
-- [Network](docs/infrastructure/network.md)
-- [VM Inventory](docs/infrastructure/vm-inventory.md)
-- [Terraform](docs/automation/terraform.md)
-- [Ansible](docs/automation/ansible.md)
-- [Application](docs/services/application.md)
-- [Reverse Proxy](docs/services/reverse-proxy.md)
-- [Database](docs/services/database.md)
-- [Monitoring](docs/services/monitoring.md)
-- [Alerting](docs/operations/alerting.md)
-- [Backup & Restore](docs/operations/backup-restore.md)
-- [Disaster Recovery](docs/operations/disaster-recovery.md)
-- [CI/CD](ci-cd/README.md)
+Important documents:
+
+- Architecture
+- Proxmox infrastructure
+- Network configuration
+- VM inventory
+- Terraform automation
+- Ansible automation
+- Application platform
+- Reverse proxy
+- Database
+- Monitoring
+- Alerting
+- Backup & Restore
+- Disaster Recovery
+- CI/CD
 
 ---
 
-# Project Status
+## Status
 
-The core infrastructure and application platform are operational.
+**Project status: Operational**
 
-Current production capabilities:
-
-- Terraform VM provisioning
-- Ansible configuration management
-- Dockerized application
-- PostgreSQL
-- Traefik reverse proxy
-- Prometheus monitoring
-- Grafana dashboards
-- Telegram alerting
-- GitHub Actions CI/CD
-- GHCR image publishing
-- Immutable deployments
-- Deployment health verification
-- Tested rollback
-- PostgreSQL backup and restore testing
-- Disaster recovery documentation
+Core infrastructure, automation, monitoring, backup/restore, security hardening, CI/CD, and automatic rollback have been implemented and tested.
