@@ -377,6 +377,7 @@ Application response:
   "application": "homelab-app",
   "status": "running"
 }
+```
 This confirms that automatic rollback was not only implemented but
 actually tested against a controlled deployment failure.
 16. Security
