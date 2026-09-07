@@ -310,36 +310,37 @@ The production server does not need to expose SSH or the application directly to
 
 ## Current Limitations
 
-This is a homelab environment and intentionally has a relatively small deployment footprint.
+The project intentionally runs with a small homelab deployment footprint.
 
 Current limitations include:
 
 - Single Proxmox host
 - Single production application VM
 - Single self-hosted runner
-- No high availability
+- No high availability cluster
+- No dedicated staging environment
 - No automated database migration pipeline
-- No automated remote backup storage
-- No multi-environment staging/production separation
+- No Proxmox VM backup automation
+- No centralized log aggregation
+- No automated HTTPS certificate management
 
-These limitations are documented rather than hidden because the purpose of the project is to demonstrate realistic infrastructure engineering and operational decision-making.
+These limitations are documented intentionally rather than hidden.
+
+The purpose of the project is to demonstrate practical infrastructure engineering, automation, monitoring, security, backup/recovery, and CI/CD practices within a realistic homelab environment.
 
 ---
 
 ## Future Improvements
 
-Potential improvements include:
+Potential future improvements include:
 
-- Automated rollback on failed health checks
-- Deployment history tracking
-- Staging environment
-- Database migration automation
-- Automated PostgreSQL backups
-- Remote backup storage
+- High availability across multiple Proxmox hosts
+- Dedicated staging environment
+- Automated database migration pipeline
 - Proxmox VM backup automation
+- Centralized logging
+- HTTPS with automated certificate management
 - Infrastructure monitoring for the CI/CD runner
-- Deployment notifications
-- Concurrency controls to prevent overlapping deployments
-- Manual `workflow_dispatch` deployments
-- GitHub environment protection rules
-- Automated release/version management
+- Deployment concurrency controls
+- GitHub environment protection and approval workflows
+- Automated release and version management
